@@ -690,7 +690,7 @@ impl<'a> Executor<'a> {
             Opcode::SLT | Opcode::SLTU => {
                 self.record.lt_events.push(event);
             }
-            Opcode::MUL | Opcode::MULHU | Opcode::MULHSU | Opcode::MULH => {
+            Opcode::MUL | Opcode::MULHU | Opcode::MULHSU | Opcode::MULH | Opcode::SQR => {
                 self.record.mul_events.push(event);
             }
             Opcode::DIVU | Opcode::REMU | Opcode::DIV | Opcode::REM => {
@@ -876,7 +876,8 @@ impl<'a> Executor<'a> {
             | Opcode::DIV
             | Opcode::DIVU
             | Opcode::REM
-            | Opcode::REMU => {
+            | Opcode::REMU
+            | Opcode::SQR => {
                 (a, b, c) = self.execute_alu(instruction, lookup_id);
             }
 
@@ -1092,6 +1093,9 @@ impl<'a> Executor<'a> {
                     b.wrapping_rem(c)
                 }
             }
+
+            // SQR
+            Opcode::SQR => b.wrapping_mul(b),
             _ => unreachable!(),
         };
         self.alu_rw(instruction, rd, a, b, c, lookup_id);
@@ -1214,7 +1218,8 @@ impl<'a> Executor<'a> {
                 let mul_count = (self.report.event_counts[Opcode::MUL]
                     + self.report.event_counts[Opcode::MULH]
                     + self.report.event_counts[Opcode::MULHU]
-                    + self.report.event_counts[Opcode::MULHSU])
+                    + self.report.event_counts[Opcode::MULHSU]
+                    + self.report.event_counts[Opcode::SQR])
                     as usize;
                 let bitwise_count = (self.report.event_counts[Opcode::XOR]
                     + self.report.event_counts[Opcode::OR]
@@ -2163,6 +2168,23 @@ mod tests {
         simple_op_code_test(Opcode::MUL, 0x00000001, 0xffffffff, 0xffffffff);
         simple_op_code_test(Opcode::MUL, 0xffffffff, 0xffffffff, 0x00000001);
         simple_op_code_test(Opcode::MUL, 0xffffffff, 0x00000001, 0xffffffff);
+    }
+
+    #[test]
+    #[allow(clippy::unreadable_literal)]
+    fn square_tests() {
+        // SQR 0x1 0x0 = 0x1
+        // SQR 0x3 0x0 = 0x9 | SQR 0x3 0x123 - 0x9 // second oprand is ignored
+        simple_op_code_test(Opcode::SQR, 0x00000000, 0x00000000, 0x00000000);
+        simple_op_code_test(Opcode::SQR, 0x00000001, 0x00000001, 0x00000123);
+
+        // SQR Overflow cases
+        // we only keep the lower 32 bits
+        let result = 0xffffffffu32.wrapping_mul(0xffffffffu32);
+        simple_op_code_test(Opcode::SQR, result, 0xffffffff, 0x00000123);
+
+        let result = 0x12345678u32.wrapping_mul(0x12345678u32);
+        simple_op_code_test(Opcode::SQR, result, 0x12345678, 0x00000123);
     }
 
     fn neg(a: u32) -> u32 {

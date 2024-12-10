@@ -136,7 +136,9 @@ impl ExecutionRecord {
                 Opcode::ADD => {
                     self.add_events.append(value);
                 }
-                Opcode::MUL | Opcode::MULH | Opcode::MULHU | Opcode::MULHSU => {
+                // NOTE: we have the option to add SQR as a seperated class of events
+                // but we don'r really have to if to *PROVE CORRECTNESS* only.
+                Opcode::MUL | Opcode::MULH | Opcode::MULHU | Opcode::MULHSU | Opcode::SQR => {
                     self.mul_events.append(value);
                 }
                 Opcode::SUB => {

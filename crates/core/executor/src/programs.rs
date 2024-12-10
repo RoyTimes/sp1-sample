@@ -20,6 +20,13 @@ pub mod tests {
         Program::new(instructions, 0, 0)
     }
 
+    #[must_use]
+    pub fn simple_sqr_program() -> Program {
+        // sqr x29 42 0
+        let instructions = vec![Instruction::new(Opcode::SQR, 29, 42, 0, true, true)];
+        Program::new(instructions, 0, 0)
+    }
+
     /// Get the fibonacci program.
     ///
     /// # Panics

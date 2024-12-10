@@ -307,6 +307,12 @@ impl InstructionProcessor for InstructionTranspiler {
         Instruction::from_r_type(Opcode::MULHSU, &dec_insn)
     }
 
+    // InstructionProcessor is within rrs-succinct, so we can't add this.
+    // This is for disassembler only ... regular RISC-V does not have a SQR instruction either way.
+    // fn process_sqr(&mut self, dec_insn: RType) -> Self::InstructionResult {
+    //     Instruction::from_r_type(Opcode::SQR, &dec_insn)
+    // }
+
     fn process_div(&mut self, dec_insn: RType) -> Self::InstructionResult {
         Instruction::from_r_type(Opcode::DIV, &dec_insn)
     }

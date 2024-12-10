@@ -47,5 +47,6 @@ test-artifacts = { workspace = true, optional = true }
 sp1-zkvm = { workspace = true, features = ["lib"] }
 
 [features]
+default = ["programs"]
 programs = ["dep:test-artifacts"]
 bigint-rug = ["sp1-curves/bigint-rug"]

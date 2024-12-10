@@ -63,6 +63,7 @@ impl Instruction {
                 | Opcode::DIVU
                 | Opcode::REM
                 | Opcode::REMU
+                | Opcode::SQR
         )
     }
 
