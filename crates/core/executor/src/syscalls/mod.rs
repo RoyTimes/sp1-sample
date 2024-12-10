@@ -26,6 +26,7 @@ use precompiles::{
     fptower::{Fp2AddSubSyscall, Fp2MulSyscall, FpOpSyscall},
     keccak256::permute::Keccak256PermuteSyscall,
     sha256::{compress::Sha256CompressSyscall, extend::Sha256ExtendSyscall},
+    sqr::SqrSyscall,
     u256x2048_mul::U256xU2048MulSyscall,
     uint256::Uint256MulSyscall,
     weierstrass::{
@@ -225,5 +226,6 @@ pub fn default_syscall_map() -> HashMap<SyscallCode, Arc<dyn Syscall>> {
         Arc::new(WeierstrassDecompressSyscall::<Bls12381>::new()),
     );
 
+    syscall_map.insert(SyscallCode::SQR, Arc::new(SqrSyscall));
     syscall_map
 }

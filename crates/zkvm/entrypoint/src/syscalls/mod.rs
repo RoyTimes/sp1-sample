@@ -11,6 +11,7 @@ mod secp256k1;
 mod secp256r1;
 mod sha_compress;
 mod sha_extend;
+mod sqr;
 mod sys;
 mod u256x2048_mul;
 mod uint256_mul;
@@ -31,6 +32,7 @@ pub use secp256k1::*;
 pub use secp256r1::*;
 pub use sha_compress::*;
 pub use sha_extend::*;
+pub use sqr::*;
 pub use sys::*;
 pub use u256x2048_mul::*;
 pub use uint256_mul::*;
@@ -157,3 +159,6 @@ pub const BN254_FP2_SUB: u32 = 0x00_01_01_2A;
 
 /// Executes the `BN254_FP2_MUL` precompile.
 pub const BN254_FP2_MUL: u32 = 0x00_01_01_2B;
+
+/// Executes the `SQR` precompile.
+pub const SQR: u32 = 0x00_01_01_69;

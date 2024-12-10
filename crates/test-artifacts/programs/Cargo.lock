@@ -1966,6 +1966,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "sqr-test"
+version = "1.1.1"
+dependencies = [
+ "num-bigint",
+ "rand",
+ "sp1-zkvm",
+]
+
+[[package]]
 name = "static_assertions"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"

@@ -13,7 +13,10 @@ use crate::{
         MemoryChipType, MemoryLocalChip, MemoryProgramChip, NUM_LOCAL_MEMORY_ENTRIES_PER_ROW,
     },
     riscv::MemoryChipType::{Finalize, Initialize},
-    syscall::precompiles::fptower::{Fp2AddSubAssignChip, Fp2MulAssignChip, FpOpChip},
+    syscall::precompiles::{
+        fptower::{Fp2AddSubAssignChip, Fp2MulAssignChip, FpOpChip},
+        sqr::SqrChip,
+    },
 };
 use hashbrown::{HashMap, HashSet};
 use p3_field::PrimeField32;
@@ -149,6 +152,8 @@ pub enum RiscvAir<F: PrimeField32> {
     Bn254Fp2Mul(Fp2MulAssignChip<Bn254BaseField>),
     /// A precompile for BN-254 fp2 addition/subtraction.
     Bn254Fp2AddSub(Fp2AddSubAssignChip<Bn254BaseField>),
+    /// A precompile for squaring a uint256.
+    Sqr(SqrChip),
 }
 
 impl<F: PrimeField32> RiscvAir<F> {
@@ -376,6 +381,10 @@ impl<F: PrimeField32> RiscvAir<F> {
         costs.insert(RiscvAirDiscriminants::ByteLookup, byte.cost());
         chips.push(byte);
 
+        let sqr = Chip::new(RiscvAir::Sqr(SqrChip::default()));
+        costs.insert(RiscvAirDiscriminants::Sqr, sqr.cost());
+        chips.push(sqr);
+
         (chips, costs)
     }
 
@@ -517,6 +526,7 @@ impl<F: PrimeField32> RiscvAir<F> {
             Self::Bls12381Fp(_) => SyscallCode::BLS12381_FP_ADD,
             Self::Bls12381Fp2Mul(_) => SyscallCode::BLS12381_FP2_MUL,
             Self::Bls12381Fp2AddSub(_) => SyscallCode::BLS12381_FP2_ADD,
+            Self::Sqr(_) => SyscallCode::SQR,
             Self::Add(_) => unreachable!("Invalid for core chip"),
             Self::Bitwise(_) => unreachable!("Invalid for core chip"),
             Self::DivRem(_) => unreachable!("Invalid for core chip"),
